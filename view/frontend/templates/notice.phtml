@@ -1,0 +1,42 @@
+<?php
+declare(strict_types=1);
+/** @var \Etechflow\ProductWarning\Block\Frontend\Notice $block */
+/** @var \Magento\Framework\Escaper $escaper */
+
+$warnings = $block->getWarnings();
+if (empty($warnings)) {
+    return;
+}
+?>
+<style>
+    .epw-stack{display:flex;flex-direction:column;gap:.6rem;margin:0 0 1rem 0;font-family:inherit}
+    .epw-notice{
+        display:flex;align-items:flex-start;gap:.65rem;
+        padding:.85rem .95rem;border-radius:.45rem;
+        border:1px solid currentColor;border-left-width:4px;
+        font-size:14px;line-height:1.4;
+    }
+    .epw-notice svg{flex:0 0 18px;width:18px;height:18px;margin-top:1px}
+    .epw-notice p{margin:0;color:#111827}
+    .epw-notice p strong{font-weight:700;margin-right:.25rem}
+</style>
+
+<div class="epw-stack" role="region" aria-label="<?= $escaper->escapeHtmlAttr(__('Product notices')) ?>">
+<?php foreach ($warnings as $w):
+    $color    = $block->safeColor((string)($w['color'] ?? ''));
+    $message  = (string)($w['message'] ?? '');
+    $tintBg   = $color . '14';   /* ~8% opacity */
+    $tintEdge = $color . '40';   /* ~25% opacity */
+?>
+    <div class="epw-notice"
+         style="background:<?= $escaper->escapeHtmlAttr($tintBg) ?>;
+                border-color:<?= $escaper->escapeHtmlAttr($tintEdge) ?>;
+                border-left-color:<?= $escaper->escapeHtmlAttr($color) ?>;
+                color:<?= $escaper->escapeHtmlAttr($color) ?>">
+        <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+        </svg>
+        <p><strong><?= $escaper->escapeHtml(__('IMPORTANT:')) ?></strong><?= $escaper->escapeHtml($message) ?></p>
+    </div>
+<?php endforeach; ?>
+</div>

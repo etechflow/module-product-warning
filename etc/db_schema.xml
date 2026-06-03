@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+
+    <table name="etechflow_warning" resource="default" engine="innodb" comment="Product warnings master">
+        <column xsi:type="int"       name="warning_id" unsigned="true" nullable="false" identity="true" comment="Warning ID"/>
+        <column xsi:type="varchar"   name="name"      length="128" nullable="false" comment="Admin name"/>
+        <column xsi:type="text"      name="message"   nullable="false" comment="Customer-facing warning message"/>
+        <column xsi:type="varchar"   name="color"     length="16"  nullable="false" default="#C41818" comment="Hex color (e.g. #C41818)"/>
+        <column xsi:type="smallint"  name="is_active" unsigned="true" nullable="false" default="1" comment="Active"/>
+        <column xsi:type="smallint"  name="sort_order" unsigned="true" nullable="false" default="0" comment="Sort order"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true"  nullable="false" default="CURRENT_TIMESTAMP"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="warning_id"/>
+        </constraint>
+        <index referenceId="ETECHFLOW_WARNING_ACTIVE" indexType="btree"><column name="is_active"/></index>
+    </table>
+
+    <table name="etechflow_warning_category" resource="default" engine="innodb" comment="Warning → Category link">
+        <column xsi:type="int" name="warning_id"  unsigned="true" nullable="false"/>
+        <column xsi:type="int" name="category_id" unsigned="true" nullable="false"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="warning_id"/>
+            <column name="category_id"/>
+        </constraint>
+        <constraint xsi:type="foreign"
+                    referenceId="ETECHFLOW_WARNING_CATEGORY_WARNING_ID_FK"
+                    table="etechflow_warning_category" column="warning_id"
+                    referenceTable="etechflow_warning" referenceColumn="warning_id"
+                    onDelete="CASCADE"/>
+        <constraint xsi:type="foreign"
+                    referenceId="ETECHFLOW_WARNING_CATEGORY_CATEGORY_ID_FK"
+                    table="etechflow_warning_category" column="category_id"
+                    referenceTable="catalog_category_entity" referenceColumn="entity_id"
+                    onDelete="CASCADE"/>
+        <index referenceId="ETECHFLOW_WARNING_CATEGORY_CAT_ID" indexType="btree"><column name="category_id"/></index>
+    </table>
+
+    <table name="etechflow_warning_product" resource="default" engine="innodb" comment="Warning → Product link">
+        <column xsi:type="int" name="warning_id" unsigned="true" nullable="false"/>
+        <column xsi:type="int" name="product_id" unsigned="true" nullable="false"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="warning_id"/>
+            <column name="product_id"/>
+        </constraint>
+        <constraint xsi:type="foreign"
+                    referenceId="ETECHFLOW_WARNING_PRODUCT_WARNING_ID_FK"
+                    table="etechflow_warning_product" column="warning_id"
+                    referenceTable="etechflow_warning" referenceColumn="warning_id"
+                    onDelete="CASCADE"/>
+        <constraint xsi:type="foreign"
+                    referenceId="ETECHFLOW_WARNING_PRODUCT_PRODUCT_ID_FK"
+                    table="etechflow_warning_product" column="product_id"
+                    referenceTable="catalog_product_entity" referenceColumn="entity_id"
+                    onDelete="CASCADE"/>
+        <index referenceId="ETECHFLOW_WARNING_PRODUCT_PROD_ID" indexType="btree"><column name="product_id"/></index>
+    </table>
+</schema>

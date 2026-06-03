@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">etechflow_warning_listing.etechflow_warning_listing_data_source</item>
+        </item>
+    </argument>
+    <settings>
+        <spinner>etechflow_warning_columns</spinner>
+        <deps>
+            <dep>etechflow_warning_listing.etechflow_warning_listing_data_source</dep>
+        </deps>
+        <buttons>
+            <button name="add">
+                <url path="*/*/new"/>
+                <class>primary</class>
+                <label translate="true">Add New Warning</label>
+            </button>
+        </buttons>
+    </settings>
+
+    <container name="how_it_works_intro">
+        <argument name="data" xsi:type="array">
+            <item name="config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/components/html</item>
+                <item name="content" xsi:type="string"><![CDATA[
+<div style="background:#EFF6FF;border:1px solid #BFDBFE;border-left:4px solid #0535F5;border-radius:6px;padding:.85rem 1.1rem;margin:0 0 1rem 0;font-size:13px;line-height:1.55;color:#1F2937">
+    <p style="margin:0 0 .35rem 0;font-weight:700;color:#0535F5">Inventory Warnings — quick guide</p>
+    <p style="margin:0 0 .5rem 0">Warnings are coloured banners shown on the product detail page. Use them to flag products that need extra info — "Unprogrammed Remote", "Repair Case Only", "Un-cut Blade", etc.</p>
+    <ul style="margin:0;padding-left:1.25rem">
+        <li><strong>Add New Warning</strong> — click the button (top right) to create a warning with name, message, colour, and assign it to categories or specific products.</li>
+        <li><strong>Edit row</strong> — change wording, colour, or update which categories/products it applies to.</li>
+        <li><strong>Delete row</strong> — removes the warning everywhere instantly (with confirmation).</li>
+        <li><strong>Status column</strong> — switch a warning off without deleting it (Inactive = hidden from customers, kept in admin).</li>
+        <li><strong>Cascading rule</strong> — assigning a warning to a parent category applies it to every product in that whole tree, including products added later. To narrow, pick a deeper subcategory — the parent is automatically dropped on save.</li>
+    </ul>
+</div>
+                ]]></item>
+            </item>
+        </argument>
+    </container>
+
+    <dataSource name="etechflow_warning_listing_data_source" component="Magento_Ui/js/grid/provider">
+        <settings>
+            <storageConfig>
+                <param name="indexField" xsi:type="string">warning_id</param>
+            </storageConfig>
+            <updateUrl path="mui/index/render"/>
+        </settings>
+        <aclResource>ETechFlow_ProductWarning::warnings</aclResource>
+        <dataProvider class="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider"
+                      name="etechflow_warning_listing_data_source">
+            <settings>
+                <requestFieldName>warning_id</requestFieldName>
+                <primaryFieldName>warning_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+
+    <listingToolbar name="listing_top">
+        <settings><sticky>true</sticky></settings>
+        <bookmark name="bookmarks"/>
+        <columnsControls name="columns_controls"/>
+        <filters name="listing_filters"/>
+        <paging name="listing_paging"/>
+    </listingToolbar>
+
+    <columns name="etechflow_warning_columns">
+        <selectionsColumn name="ids">
+            <settings><indexField>warning_id</indexField></settings>
+        </selectionsColumn>
+        <column name="warning_id">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">ID</label>
+                <sorting>desc</sorting>
+            </settings>
+        </column>
+        <column name="name">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Name</label>
+            </settings>
+        </column>
+        <column name="message">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Message</label>
+            </settings>
+        </column>
+        <column name="color" class="ETechFlow\ProductWarning\Ui\Component\Listing\Column\ColorSwatch">
+            <settings>
+                <bodyTmpl>ui/grid/cells/html</bodyTmpl>
+                <label translate="true">Color</label>
+                <sortable>false</sortable>
+            </settings>
+        </column>
+        <column name="is_active" component="Magento_Ui/js/grid/columns/select">
+            <settings>
+                <options class="ETechFlow\ProductWarning\Model\Source\IsActive"/>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <label translate="true">Status</label>
+            </settings>
+        </column>
+        <column name="sort_order">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">Sort Order</label>
+            </settings>
+        </column>
+        <column name="created_at" class="Magento\Ui\Component\Listing\Columns\Date" component="Magento_Ui/js/grid/columns/date">
+            <settings>
+                <filter>dateRange</filter>
+                <dataType>date</dataType>
+                <label translate="true">Created</label>
+            </settings>
+        </column>
+        <actionsColumn name="actions" class="ETechFlow\ProductWarning\Ui\Component\Listing\Column\Actions">
+            <settings>
+                <indexField>warning_id</indexField>
+                <resizeEnabled>false</resizeEnabled>
+                <resizeDefaultWidth>120</resizeDefaultWidth>
+            </settings>
+        </actionsColumn>
+    </columns>
+</listing>

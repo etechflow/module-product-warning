@@ -1,0 +1,198 @@
+<?xml version="1.0"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">etechflow_warning_form.etechflow_warning_form_data_source</item>
+        </item>
+        <item name="label" xsi:type="string" translate="true">Warning Information</item>
+        <item name="template" xsi:type="string">templates/form/collapsible</item>
+    </argument>
+    <settings>
+        <buttons>
+            <button name="back" class="Magento\Backend\Block\Widget\Button\GenericButton">
+                <url path="*/*/"/>
+                <class>back</class>
+                <label translate="true">Back</label>
+            </button>
+            <button name="save" class="Magento\Ui\Component\Control\SaveButton">
+                <label translate="true">Save Warning</label>
+            </button>
+        </buttons>
+        <namespace>etechflow_warning_form</namespace>
+        <dataScope>data</dataScope>
+        <deps>
+            <dep>etechflow_warning_form.etechflow_warning_form_data_source</dep>
+        </deps>
+    </settings>
+
+    <dataSource name="etechflow_warning_form_data_source">
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+        <settings>
+            <submitUrl path="etechflow_warning/warning/save"/>
+        </settings>
+        <dataProvider class="ETechFlow\ProductWarning\Ui\DataProvider\FormDataProvider"
+                      name="etechflow_warning_form_data_source">
+            <settings>
+                <requestFieldName>warning_id</requestFieldName>
+                <primaryFieldName>warning_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+
+    <fieldset name="general">
+        <settings>
+            <label translate="true">General</label>
+        </settings>
+        <container name="how_it_works_note">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="component" xsi:type="string">Magento_Ui/js/form/components/html</item>
+                    <item name="additionalClasses" xsi:type="string">ks-warning-howto</item>
+                    <item name="content" xsi:type="string"><![CDATA[
+<div style="background:#FEF3C7;border:1px solid #FCD34D;border-left:4px solid #D97706;border-radius:6px;padding:.75rem 1rem;margin-bottom:1rem;font-size:13px;line-height:1.55;color:#78350F">
+    <p style="margin:0 0 .35rem 0;font-weight:700">How warnings work</p>
+    <ol style="margin:0;padding-left:1.25rem">
+        <li><strong>Name</strong> — your internal label (admins only see this, not customers).</li>
+        <li><strong>Message</strong> — the text shown to customers on the product page banner.</li>
+        <li><strong>Color</strong> — the banner background tint. Red for caution, orange for info, blue for neutral.</li>
+        <li><strong>Sort Order</strong> — when multiple warnings apply to the same product, lower numbers appear higher.</li>
+        <li>Under <strong>Apply To</strong> below, pick a category (and optionally narrower sub-levels or specific products). The warning will appear on every matching product instantly, including products added later to those categories.</li>
+    </ol>
+</div>
+                    ]]></item>
+                </item>
+            </argument>
+        </container>
+        <field name="warning_id" formElement="input">
+            <settings>
+                <visible>false</visible>
+                <dataType>text</dataType>
+                <dataScope>warning_id</dataScope>
+            </settings>
+        </field>
+        <field name="name" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Name</label>
+                <notice translate="true">Internal label for this warning (e.g. "Unprogrammed Remote Notice").</notice>
+                <tooltip>
+                    <description translate="true">Admin-only label. Customers never see this — they see the Message field. Used in the warnings list and reports so you can identify each warning at a glance.</description>
+                </tooltip>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+                <dataScope>name</dataScope>
+            </settings>
+        </field>
+        <field name="message" formElement="textarea">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Message</label>
+                <notice translate="true">The text customers see on the product page.</notice>
+                <tooltip>
+                    <description translate="true">The actual sentence displayed inside the coloured banner on the product page. Keep it short and clear. Example: "This product is supplied uncut and requires cutting before use."</description>
+                </tooltip>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+                <dataScope>message</dataScope>
+            </settings>
+        </field>
+        <field name="color" formElement="select">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Color</label>
+                <notice translate="true">Banner color shown on the frontend.</notice>
+                <tooltip>
+                    <description translate="true">Choose a colour that matches the urgency. Red for cautions/blocking issues, Orange for important info, Blue for neutral notices, Green for positive notes.</description>
+                </tooltip>
+                <dataScope>color</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="ETechFlow\ProductWarning\Model\Source\Color"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="is_active" formElement="checkbox">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="string">1</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>boolean</dataType>
+                <label translate="true">Active</label>
+                <dataScope>is_active</dataScope>
+                <tooltip>
+                    <description translate="true">Toggle off to hide this warning from every product on the frontend without losing its configuration. Re-enable any time. Useful for seasonal warnings or temporary supplier issues.</description>
+                </tooltip>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true"  xsi:type="number">1</map>
+                        </valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+        <field name="sort_order" formElement="input">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Sort Order</label>
+                <dataScope>sort_order</dataScope>
+                <notice translate="true">Lower numbers appear first when multiple warnings are shown on a product. Recommended values: 10, 20, 30, 40 — leave gaps so you can insert new warnings later without renumbering.</notice>
+                <tooltip>
+                    <description translate="true">When a product matches more than one warning (e.g. it's both a remote key AND a repair case), they stack on the page in this order — lowest sort_order on top. Use steps of 10 so future warnings can slot in between without renumbering existing ones.</description>
+                </tooltip>
+            </settings>
+        </field>
+    </fieldset>
+
+    <fieldset name="assignment">
+        <settings>
+            <label translate="true">Apply To</label>
+            <collapsible>true</collapsible>
+            <opened>true</opened>
+        </settings>
+        <container name="picker_container"
+                   component="ETechFlow_ProductWarning/js/picker"
+                   template="ETechFlow_ProductWarning/picker">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="componentType" xsi:type="string">container</item>
+                    <item name="dataScope" xsi:type="string"></item>
+                    <item name="urls" xsi:type="array">
+                        <item name="categoriesTree" xsi:type="url" path="etechflow_warning/warning/categoriesTree"/>
+                        <item name="products" xsi:type="url" path="etechflow_warning/warning/products"/>
+                    </item>
+                </item>
+            </argument>
+        </container>
+        <field name="category_ids" formElement="input">
+            <settings>
+                <visible>false</visible>
+                <dataType>text</dataType>
+                <dataScope>category_ids</dataScope>
+            </settings>
+        </field>
+        <field name="product_ids" formElement="input">
+            <settings>
+                <visible>false</visible>
+                <dataType>text</dataType>
+                <dataScope>product_ids</dataScope>
+            </settings>
+        </field>
+    </fieldset>
+</form>

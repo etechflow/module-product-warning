@@ -1,0 +1,138 @@
+<div class="ks-picker" style="background:#fff">
+
+    <!-- How-to instructions for the picker -->
+    <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-left:4px solid #0535F5;border-radius:6px;padding:.75rem 1rem;margin-bottom:1rem;font-size:12.5px;line-height:1.55;color:#1F2937">
+        <p style="margin:0 0 .35rem 0;font-weight:700;color:#0535F5">How to apply this warning</p>
+        <ol style="margin:0;padding-left:1.25rem">
+            <li><strong>Step 1 — Category:</strong> pick a top-level category (e.g. "Car Keys"). Stop here and the warning applies to every product in that whole category tree, including future products you add later.</li>
+            <li><strong>Step 2 — Subcategory (optional):</strong> pick a sub-branch (e.g. "BMW Remote Keys"). Narrows the warning to just that subcategory. The parent is automatically dropped on save.</li>
+            <li><strong>Step 3 — Sub-subcategory (optional):</strong> drill further. Each deeper pick replaces the broader selection.</li>
+            <li><strong>Step 4 — Specific products (optional):</strong> hand-pick individual products by name or SKU. Combine with categories or use on their own.</li>
+        </ol>
+        <p style="margin:.4rem 0 0 0;font-size:11.5px;color:#6B7280">Tip: the deepest selection in each branch wins. Picking "Car Keys" then "BMW Remote Keys" stores only "BMW Remote Keys" — Audi keys in the same parent will no longer get this warning.</p>
+    </div>
+
+    <div data-bind="visible: loadingCats" style="font-size:12px;color:#6B7280;padding:.5rem">Loading categories…</div>
+
+    <!-- ============== LEVEL 1: CATEGORIES ============== -->
+    <div style="margin-bottom:1rem">
+        <label style="display:block;font-weight:700;font-size:13px;margin-bottom:.35rem;color:#41362F">1. Category</label>
+        <div style="position:relative">
+            <div data-bind="click: function(d,e){ openDropdown('cat1',e); }, css:{'ks-open':cat1Open}"
+                 style="border:1.5px solid #D1D5DB;background:#fff;border-radius:6px;padding:.5rem .75rem;font-size:13px;cursor:pointer;min-height:36px;display:flex;flex-wrap:wrap;gap:.3rem;align-items:center">
+                <!-- ko foreach: cat1Selected -->
+                <span style="display:inline-flex;align-items:center;gap:.35rem;background:#EFF6FF;border:1px solid #BFDBFE;color:#0535F5;padding:.15rem .5rem;border-radius:999px;font-size:11.5px;font-weight:600">
+                    <span data-bind="text: $parent.getCatNameById($data)"></span>
+                    <a href="#" data-bind="click: function(){ $parent.removeCat($data, 2); return false; }" style="color:#0535F5;text-decoration:none;font-weight:900">×</a>
+                </span>
+                <!-- /ko -->
+                <span data-bind="visible: cat1Selected.length === 0" style="color:#9CA3AF;font-size:12.5px">Select one or more categories…</span>
+            </div>
+            <div data-bind="visible: cat1Open" style="position:absolute;left:0;right:0;top:100%;margin-top:4px;background:#fff;border:1.5px solid #D1D5DB;border-radius:6px;max-height:280px;overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,0.12);z-index:50">
+                <input type="text" data-bind="textInput: cat1Search" placeholder="Search categories…"
+                       style="width:100%;padding:.5rem .75rem;border:none;border-bottom:1px solid #E5E7EB;font-size:13px;outline:none">
+                <div style="max-height:230px;overflow:auto">
+                    <!-- ko foreach: getCat1Options() -->
+                    <label style="display:flex;align-items:center;gap:.5rem;padding:.4rem .75rem;border-bottom:1px solid #F3F4F6;font-size:12.5px;cursor:pointer">
+                        <input type="checkbox" data-bind="checked: $parent.cat1Selected.indexOf(id) >= 0, click: function(){ $parent.toggleCat1($data); return true; }">
+                        <span data-bind="text: name"></span>
+                    </label>
+                    <!-- /ko -->
+                    <div data-bind="visible: getCat1Options().length === 0 && !loadingCats" style="padding:.5rem .75rem;font-size:12px;color:#9CA3AF;font-style:italic">No matches.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============== LEVEL 2: SUBCATEGORIES ============== -->
+    <div data-bind="visible: cat1Selected.length > 0" style="margin-bottom:1rem">
+        <label style="display:block;font-weight:700;font-size:13px;margin-bottom:.35rem;color:#41362F">2. Subcategory <span style="color:#9CA3AF;font-weight:400">(optional)</span></label>
+        <div style="position:relative">
+            <div data-bind="click: function(d,e){ openDropdown('cat2',e); }, css:{'ks-open':cat2Open}"
+                 style="border:1.5px solid #D1D5DB;background:#fff;border-radius:6px;padding:.5rem .75rem;font-size:13px;cursor:pointer;min-height:36px;display:flex;flex-wrap:wrap;gap:.3rem;align-items:center">
+                <!-- ko foreach: cat2Selected -->
+                <span style="display:inline-flex;align-items:center;gap:.35rem;background:#EFF6FF;border:1px solid #BFDBFE;color:#0535F5;padding:.15rem .5rem;border-radius:999px;font-size:11.5px;font-weight:600">
+                    <span data-bind="text: $parent.getCatNameById($data)"></span>
+                    <a href="#" data-bind="click: function(){ $parent.removeCat($data, 3); return false; }" style="color:#0535F5;text-decoration:none;font-weight:900">×</a>
+                </span>
+                <!-- /ko -->
+                <span data-bind="visible: cat2Selected.length === 0" style="color:#9CA3AF;font-size:12.5px">All subcategories of selected categories — or narrow down…</span>
+            </div>
+            <div data-bind="visible: cat2Open" style="position:absolute;left:0;right:0;top:100%;margin-top:4px;background:#fff;border:1.5px solid #D1D5DB;border-radius:6px;max-height:280px;overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,0.12);z-index:50">
+                <input type="text" data-bind="textInput: cat2Search" placeholder="Search subcategories…"
+                       style="width:100%;padding:.5rem .75rem;border:none;border-bottom:1px solid #E5E7EB;font-size:13px;outline:none">
+                <div style="max-height:230px;overflow:auto">
+                    <!-- ko foreach: getCat2Options() -->
+                    <label style="display:flex;align-items:center;gap:.5rem;padding:.4rem .75rem;border-bottom:1px solid #F3F4F6;font-size:12.5px;cursor:pointer">
+                        <input type="checkbox" data-bind="checked: $parent.cat2Selected.indexOf(id) >= 0, click: function(){ $parent.toggleCat2($data); return true; }">
+                        <span data-bind="text: name"></span>
+                    </label>
+                    <!-- /ko -->
+                    <div data-bind="visible: getCat2Options().length === 0" style="padding:.5rem .75rem;font-size:12px;color:#9CA3AF;font-style:italic">No subcategories under selected parents.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============== LEVEL 3: SUB-SUBCATEGORIES ============== -->
+    <div data-bind="visible: cat2Selected.length > 0" style="margin-bottom:1rem">
+        <label style="display:block;font-weight:700;font-size:13px;margin-bottom:.35rem;color:#41362F">3. Sub-subcategory <span style="color:#9CA3AF;font-weight:400">(optional)</span></label>
+        <div style="position:relative">
+            <div data-bind="click: function(d,e){ openDropdown('cat3',e); }, css:{'ks-open':cat3Open}"
+                 style="border:1.5px solid #D1D5DB;background:#fff;border-radius:6px;padding:.5rem .75rem;font-size:13px;cursor:pointer;min-height:36px;display:flex;flex-wrap:wrap;gap:.3rem;align-items:center">
+                <!-- ko foreach: cat3Selected -->
+                <span style="display:inline-flex;align-items:center;gap:.35rem;background:#EFF6FF;border:1px solid #BFDBFE;color:#0535F5;padding:.15rem .5rem;border-radius:999px;font-size:11.5px;font-weight:600">
+                    <span data-bind="text: $parent.getCatNameById($data)"></span>
+                    <a href="#" data-bind="click: function(){ $parent.removeCat($data, 4); return false; }" style="color:#0535F5;text-decoration:none;font-weight:900">×</a>
+                </span>
+                <!-- /ko -->
+                <span data-bind="visible: cat3Selected.length === 0" style="color:#9CA3AF;font-size:12.5px">Optional — drill down further…</span>
+            </div>
+            <div data-bind="visible: cat3Open" style="position:absolute;left:0;right:0;top:100%;margin-top:4px;background:#fff;border:1.5px solid #D1D5DB;border-radius:6px;max-height:280px;overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,0.12);z-index:50">
+                <input type="text" data-bind="textInput: cat3Search" placeholder="Search sub-subcategories…"
+                       style="width:100%;padding:.5rem .75rem;border:none;border-bottom:1px solid #E5E7EB;font-size:13px;outline:none">
+                <div style="max-height:230px;overflow:auto">
+                    <!-- ko foreach: getCat3Options() -->
+                    <label style="display:flex;align-items:center;gap:.5rem;padding:.4rem .75rem;border-bottom:1px solid #F3F4F6;font-size:12.5px;cursor:pointer">
+                        <input type="checkbox" data-bind="checked: $parent.cat3Selected.indexOf(id) >= 0, click: function(){ $parent.toggleCat3($data); return true; }">
+                        <span data-bind="text: name"></span>
+                    </label>
+                    <!-- /ko -->
+                    <div data-bind="visible: getCat3Options().length === 0" style="padding:.5rem .75rem;font-size:12px;color:#9CA3AF;font-style:italic">No sub-subcategories under selected subcategories.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============== LEVEL 4: PRODUCTS ============== -->
+    <div data-bind="visible: cat1Selected.length > 0" style="margin-bottom:.5rem">
+        <label style="display:block;font-weight:700;font-size:13px;margin-bottom:.35rem;color:#41362F">4. Specific Products <span style="color:#9CA3AF;font-weight:400">(optional — leave empty to cover ALL products in selected categories)</span></label>
+        <div style="position:relative">
+            <div data-bind="click: function(d,e){ openDropdown('product',e); }, css:{'ks-open':productOpen}"
+                 style="border:1.5px solid #D1D5DB;background:#fff;border-radius:6px;padding:.5rem .75rem;font-size:13px;cursor:pointer;min-height:36px;display:flex;flex-wrap:wrap;gap:.3rem;align-items:center">
+                <!-- ko foreach: productSelected -->
+                <span style="display:inline-flex;align-items:center;gap:.35rem;background:#F0FDF4;border:1px solid #86EFAC;color:#15803D;padding:.15rem .5rem;border-radius:999px;font-size:11.5px;font-weight:600">
+                    <span data-bind="text: $parent.getProductNameById($data)"></span>
+                    <a href="#" data-bind="click: function(){ $parent.removeProduct($data); return false; }" style="color:#15803D;text-decoration:none;font-weight:900">×</a>
+                </span>
+                <!-- /ko -->
+                <span data-bind="visible: productSelected.length === 0" style="color:#9CA3AF;font-size:12.5px">All products in selected categories — or pick specific ones…</span>
+            </div>
+            <div data-bind="visible: productOpen" style="position:absolute;left:0;right:0;top:100%;margin-top:4px;background:#fff;border:1.5px solid #D1D5DB;border-radius:6px;max-height:320px;overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,0.12);z-index:50">
+                <input type="text" data-bind="textInput: productSearch, event:{ keyup: onProductSearchChange }" placeholder="Search products by name or SKU…"
+                       style="width:100%;padding:.5rem .75rem;border:none;border-bottom:1px solid #E5E7EB;font-size:13px;outline:none">
+                <div data-bind="visible: loadingProducts" style="padding:.5rem .75rem;font-size:12px;color:#6B7280">Loading products…</div>
+                <div style="max-height:270px;overflow:auto">
+                    <!-- ko foreach: productOptions -->
+                    <label style="display:flex;align-items:center;gap:.5rem;padding:.4rem .75rem;border-bottom:1px solid #F3F4F6;font-size:12.5px;cursor:pointer">
+                        <input type="checkbox" data-bind="checked: $parent.productSelected.indexOf(id) >= 0, click: function(){ $parent.toggleProduct($data); return true; }">
+                        <span><span data-bind="text: name"></span> <span style="color:#9CA3AF;font-size:11px" data-bind="text: '(' + sku + ')'"></span></span>
+                    </label>
+                    <!-- /ko -->
+                    <div data-bind="visible: productOptions.length === 0 && !loadingProducts" style="padding:.5rem .75rem;font-size:12px;color:#9CA3AF;font-style:italic">No products found.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

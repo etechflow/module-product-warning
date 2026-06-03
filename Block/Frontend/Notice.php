@@ -19,17 +19,22 @@ use Magento\Framework\View\Element\Template\Context;
 class Notice extends Template
 {
     private Registry $registry;
-    private WarningResolver $resolver;
+    // v1.0.1: renamed from $resolver to avoid colliding with the protected
+    // $resolver property declared in Magento\Framework\View\Element\Template
+    // (PHP requires equal-or-weaker visibility on override; private was
+    // stronger than protected → class-load fatal). php -l doesn't catch
+    // this — only di:compile or runtime instantiation does.
+    private WarningResolver $warningResolver;
 
     public function __construct(
         Context $context,
         Registry $registry,
-        WarningResolver $resolver,
+        WarningResolver $warningResolver,
         array $data = []
     ) {
         parent::__construct($context, $data);
         $this->registry = $registry;
-        $this->resolver = $resolver;
+        $this->warningResolver = $warningResolver;
     }
 
     public function getProduct(): ?Product
@@ -48,7 +53,7 @@ class Notice extends Template
             return [];
         }
         try {
-            return $this->resolver->getForProduct($product);
+            return $this->warningResolver->getForProduct($product);
         } catch (\Throwable $e) {
             // Never break the PDP because of a warning lookup
             return [];

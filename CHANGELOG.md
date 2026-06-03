@@ -1,8 +1,72 @@
-# Changelog — Etechflow_ProductWarning
+# Changelog — ETechFlow Product Warning
 
-## [1.0.0] — 2026-05-20
+All notable changes to this module. Adheres to [Semantic Versioning](https://semver.org/).
 
-First public release as a standalone, theme-agnostic Magento 2 module.
+---
+
+## [1.0.1] — 2026-06-03 — Critical: Fix class-load fatal in PDP Notice block
+
+### Fixed
+
+- **`Block/Frontend/Notice.php` class-load fatal**: the `$resolver`
+  property was declared `private`, but Magento's `\Magento\Framework\
+  View\Element\Template` parent class declares its own `$resolver` as
+  `protected`. PHP requires equal-or-weaker visibility on inherited
+  property overrides, so v1.0.0 caused `setup:di:compile` and PDP
+  render to fatal with:
+
+  ```
+  Fatal error: Access level to ETechFlow\ProductWarning\Block\Frontend\
+  Notice::$resolver must be protected (as in class Magento\Framework\
+  View\Element\Template) or weaker
+  ```
+
+  Caught on first local Docker install — **`php -l` does NOT detect
+  this class of bug** because it's a class-load-time check, not a
+  syntax check. Same bug class flagged in the eTechFlow memory after
+  similar issues in earlier modules.
+
+  **Fix**: renamed the property `$resolver` → `$warningResolver`
+  (along with the constructor parameter + every `$this->resolver`
+  reference). Side-steps the collision entirely without shadowing the
+  parent's actual layout resolver.
+
+- **Same class of bug to watch for elsewhere**: any Magento block
+  that extends `Template` or `AbstractBlock` and declares a `private`
+  property that shadows an inherited `protected` one. Most-common
+  offenders: `$resolver`, `$_resolver`, `$escaper`, `$_escaper`,
+  `$jsLayout`, `$_template`. `php -l` won't catch them. `setup:di:
+  compile` will, on every install.
+
+### Added
+
+- **`Setup/Patch/Data/V101ReleaseMarker.php`** — always-a-patch
+  discipline marker. Depends on `SeedDefaultWarnings` so patches run
+  in correct version order.
+
+### Migration
+
+```bash
+composer require etechflow/module-product-warning:^1.0.1
+bin/magento setup:upgrade
+bin/magento setup:di:compile
+bin/magento cache:flush
+```
+
+Pre-flight check:
+```sql
+SELECT module, schema_version, data_version FROM setup_module
+WHERE module='ETechFlow_ProductWarning';
+```
+Both should read `1.0.1`. If `data_version` is stale, re-run
+`setup:upgrade` — do NOT flush cache yet.
+
+Anyone who installed v1.0.0 hit the class-load fatal on the first
+PDP render or `setup:di:compile`. v1.0.1 fixes it. **Strongly
+recommend upgrade for any v1.0.0 installs.**
+
+---
+
 
 ### Added
 

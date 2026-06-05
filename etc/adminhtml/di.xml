@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!--
+  Admin-area DI for ETechFlow_ProductWarning.
+
+  Registers the License gate plugin against every concrete admin controller
+  that should be locked when the licence is invalid. License/* controllers
+  (Gate, Checkout, Activated) are intentionally NOT in this list — the
+  merchant must always be able to reach the gate page and the post-payment
+  landing.
+
+  Each concrete controller extends Magento\Backend\App\Action directly,
+  so we list each one individually (no abstract base to plug into).
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <!-- Warning CRUD controllers -->
+    <type name="ETechFlow\ProductWarning\Controller\Adminhtml\Warning\Index">
+        <plugin name="etechflow_pw_license_gate_warning_index" type="ETechFlow\ProductWarning\Plugin\Adminhtml\LicenseGatePlugin" sortOrder="10"/>
+    </type>
+    <type name="ETechFlow\ProductWarning\Controller\Adminhtml\Warning\NewAction">
+        <plugin name="etechflow_pw_license_gate_warning_new" type="ETechFlow\ProductWarning\Plugin\Adminhtml\LicenseGatePlugin" sortOrder="10"/>
+    </type>
+    <type name="ETechFlow\ProductWarning\Controller\Adminhtml\Warning\Edit">
+        <plugin name="etechflow_pw_license_gate_warning_edit" type="ETechFlow\ProductWarning\Plugin\Adminhtml\LicenseGatePlugin" sortOrder="10"/>
+    </type>
+    <type name="ETechFlow\ProductWarning\Controller\Adminhtml\Warning\Save">
+        <plugin name="etechflow_pw_license_gate_warning_save" type="ETechFlow\ProductWarning\Plugin\Adminhtml\LicenseGatePlugin" sortOrder="10"/>
+    </type>
+    <type name="ETechFlow\ProductWarning\Controller\Adminhtml\Warning\Delete">
+        <plugin name="etechflow_pw_license_gate_warning_delete" type="ETechFlow\ProductWarning\Plugin\Adminhtml\LicenseGatePlugin" sortOrder="10"/>
+    </type>
+
+    <!-- Edit-form pickers (search + assignment lookups) -->
+    <type name="ETechFlow\ProductWarning\Controller\Adminhtml\Warning\Products">
+        <plugin name="etechflow_pw_license_gate_warning_products" type="ETechFlow\ProductWarning\Plugin\Adminhtml\LicenseGatePlugin" sortOrder="10"/>
+    </type>
+    <type name="ETechFlow\ProductWarning\Controller\Adminhtml\Warning\AssignedProducts">
+        <plugin name="etechflow_pw_license_gate_warning_assigned" type="ETechFlow\ProductWarning\Plugin\Adminhtml\LicenseGatePlugin" sortOrder="10"/>
+    </type>
+    <type name="ETechFlow\ProductWarning\Controller\Adminhtml\Warning\CategoriesTree">
+        <plugin name="etechflow_pw_license_gate_warning_categoriestree" type="ETechFlow\ProductWarning\Plugin\Adminhtml\LicenseGatePlugin" sortOrder="10"/>
+    </type>
+    <type name="ETechFlow\ProductWarning\Controller\Adminhtml\Warning\Subcategories">
+        <plugin name="etechflow_pw_license_gate_warning_subcategories" type="ETechFlow\ProductWarning\Plugin\Adminhtml\LicenseGatePlugin" sortOrder="10"/>
+    </type>
+</config>

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace ETechFlow\ProductWarning\Block\Frontend;
 
+use ETechFlow\ProductWarning\Model\LicenseValidator;
 use ETechFlow\ProductWarning\Model\WarningResolver;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Registry;
@@ -15,6 +16,12 @@ use Magento\Framework\View\Element\Template\Context;
  *
  * The block is auto-injected into the product.info.main container by this
  * module's catalog_product_view.xml layout file — no theme override needed.
+ *
+ * v1.1.0: storefront gating. When the module is not licensed, getWarnings()
+ * returns an empty array — the template short-circuits and renders nothing.
+ * The banner block stays in the layout but produces zero output for unlicensed
+ * stores, so the storefront degrades silently rather than crashing or showing
+ * a "module locked" message to customers.
  */
 class Notice extends Template
 {
@@ -25,16 +32,19 @@ class Notice extends Template
     // stronger than protected → class-load fatal). php -l doesn't catch
     // this — only di:compile or runtime instantiation does.
     private WarningResolver $warningResolver;
+    private LicenseValidator $licenseValidator;
 
     public function __construct(
         Context $context,
         Registry $registry,
         WarningResolver $warningResolver,
+        LicenseValidator $licenseValidator,
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->registry = $registry;
-        $this->warningResolver = $warningResolver;
+        $this->registry         = $registry;
+        $this->warningResolver  = $warningResolver;
+        $this->licenseValidator = $licenseValidator;
     }
 
     public function getProduct(): ?Product
@@ -48,6 +58,9 @@ class Notice extends Template
      */
     public function getWarnings(): array
     {
+        if (!$this->licenseValidator->isValid()) {
+            return [];
+        }
         $product = $this->getProduct();
         if (!$product) {
             return [];

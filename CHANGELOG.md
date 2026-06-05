@@ -4,6 +4,94 @@ All notable changes to this module. Adheres to [Semantic Versioning](https://sem
 
 ---
 
+## [1.1.0] — 2026-06-05 — Stripe portal licensing + admin gate + storefront gating
+
+### Added
+
+- **Stripe portal subscription licensing.** Adds the SP-XXXX subscription-key
+  flow — same pattern shipped on `ETechFlow_BackorderEtaDisplay` v1.3.0,
+  `ETechFlow_NextDayEligibility` v1.8.0, `ETechFlow_ShippingTableRates` v1.2.0,
+  and `ETechFlow_Faq` v1.1.0. Three plan tiers (Starter $9/mo, Professional
+  $19/mo, Enterprise $49/mo) with in-admin Stripe Checkout, automatic key
+  activation, portal-validated server-IP enforcement, IP-block auto-restore,
+  and 48-hour offline grace when the portal is unreachable. HMAC per-module +
+  bundle keys (LICENSING_PROTOCOL.md) continue to work for offline / bundle
+  activation.
+
+- **`Model/LicenseValidator.php`** — upgraded constructor from 2-arg to
+  5-arg (`ScopeConfigInterface`, `StoreManagerInterface`, `CacheInterface`,
+  `Curl`, `WriterInterface`). Adds tri-state `validateViaPortal(): ?bool`
+  per the enforcement contract. Preserves `MODULE_ID = 'product-warning'`
+  and the existing `SECRET_FRAGMENTS` byte-for-byte so v1.0.x HMAC keys
+  remain valid.
+
+- **License gate page** under **Catalog → Inventory Warning → License & Plans**
+  with dark plan-cards UI and a Stripe Checkout button. Visiting any
+  warning-admin URL without a valid licence redirects here.
+
+- **Module Status banner** (5-state) at the top of Stores → Configuration →
+  ETECHFLOW → Product Warning. Tells the merchant exactly why the module is
+  locked (or that it's active).
+
+- **Admin gating plugin** (`Plugin/Adminhtml/LicenseGatePlugin.php`) — every
+  admin Warning CRUD controller + every assignment-picker controller (9 in
+  total) redirects to the license gate when not licensed.
+
+- **Storefront gating** — `Block/Frontend/Notice.php` now checks
+  `LicenseValidator::isValid()` before calling the resolver. When unlicensed,
+  `getWarnings()` returns an empty array and the PDP renders no banner. The
+  block stays in the layout but produces zero output — the storefront
+  degrades silently rather than crashing or showing a "module locked" message
+  to customers.
+
+- **`<payment>` config group** for Stripe `sk_test` / `sk_live` / publishable
+  key / currency (Encrypted backend model on the secret key).
+
+- **`<license>` config group** expanded — adds `issued_key` (Encrypted audit
+  field), `issued_at` (timestamp), `ip_blocked` (auto-managed flag),
+  `portal_url`, and `bundle_license_key` (Encrypted, mapped to the shared
+  `etechflow_bundle/license/license_key` path).
+
+### Changed
+
+- **Menu restructured.** `Catalog → Inventory Warning` is now a parent node
+  with two children: **Manage Warnings** (the existing grid) and **License &
+  Plans** (the new gate). Existing bookmarks to `/etechflow_warning/warning/index`
+  continue to work unchanged.
+
+- **Module Status backend block** added (`Block/Adminhtml/System/Config/ModuleStatus.php`)
+  to render the always-expanded 5-state banner on the Stores → Config page.
+
+### Migration
+
+```
+composer update etechflow/module-product-warning
+bin/magento setup:upgrade
+bin/magento setup:di:compile
+bin/magento cache:flush
+```
+
+After upgrade, on a production host the module is **locked by default**.
+Go to **Catalog → Inventory Warning → License & Plans** and either paste an
+existing SP-XXXX / HMAC / bundle key, or click "Select Plan & Pay" to buy
+a subscription via Stripe.
+
+Dev hosts (localhost, `*.test`, `*.local`, `staging.*`, `*.ngrok-free.dev`,
+etc.) auto-bypass licensing. Production hosts that aren't auto-detected can
+opt out with **Production Environment = No**.
+
+### Notes
+
+- `License Portal URL` defaults to
+  `https://subpanel-paralyses-president.ngrok-free.dev/license/validate`
+  (the eTechFlow portal). For production, change this when eTechFlow
+  publishes the final portal URL.
+- Portal IP-revoke + suspend lock the module within ~60 seconds. Re-activating
+  in the portal restores the module within the same window via the
+  `issued_key` auto-restore.
+
+---
+
 ## [1.0.2] — 2026-06-05 — Fix blank admin grid + remove default-data seed
 
 ### Fixed

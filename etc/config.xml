@@ -4,9 +4,18 @@
     <default>
         <etechflow_productwarning>
             <license>
-                <license_key></license_key>
                 <production_environment>1</production_environment>
+                <license_key></license_key>
+                <issued_key></issued_key>
+                <issued_at>0</issued_at>
+                <ip_blocked>0</ip_blocked>
+                <portal_url>https://subpanel-paralyses-president.ngrok-free.dev/license/validate</portal_url>
             </license>
+            <payment>
+                <stripe_secret_key></stripe_secret_key>
+                <stripe_publishable_key></stripe_publishable_key>
+                <stripe_currency>usd</stripe_currency>
+            </payment>
             <general>
                 <enabled>1</enabled>
             </general>

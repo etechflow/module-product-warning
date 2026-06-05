@@ -1,4 +1,17 @@
 <?xml version="1.0"?>
+<!--
+  Global DI for ETechFlow_ProductWarning.
+
+  v1.1.0: preserves the v1.0.x admin-grid CollectionFactory wiring + the
+  Warning collection's virtualType binding. No licensing-specific entries
+  here — the licence gate plugin lives in etc/adminhtml/di.xml because it
+  should only fire in admin scope.
+
+  Why this lives in the GLOBAL di.xml and NOT etc/adminhtml/di.xml: per-area
+  di.xml files treat <argument xsi:type="array"> as a REPLACEMENT, not a
+  merge, so registering the listing data-source here in global scope is the
+  only way every other module's grid registrations survive the compile.
+-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
 

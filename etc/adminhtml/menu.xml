@@ -2,12 +2,25 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
     <menu>
-        <add id="ETechFlow_ProductWarning::warnings"
+        <add id="ETechFlow_ProductWarning::root"
              title="Inventory Warning"
              module="ETechFlow_ProductWarning"
              sortOrder="85"
-             action="etechflow_warning/warning/index"
              parent="Magento_Catalog::catalog"
+             resource="ETechFlow_ProductWarning::warnings"/>
+        <add id="ETechFlow_ProductWarning::warnings"
+             title="Manage Warnings"
+             module="ETechFlow_ProductWarning"
+             sortOrder="10"
+             parent="ETechFlow_ProductWarning::root"
+             action="etechflow_warning/warning/index"
+             resource="ETechFlow_ProductWarning::warnings"/>
+        <add id="ETechFlow_ProductWarning::license_gate"
+             title="License &amp; Plans"
+             module="ETechFlow_ProductWarning"
+             sortOrder="100"
+             parent="ETechFlow_ProductWarning::root"
+             action="etechflow_warning/license/gate"
              resource="ETechFlow_ProductWarning::warnings"/>
     </menu>
 </config>

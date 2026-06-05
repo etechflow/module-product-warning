@@ -25,7 +25,6 @@ Per-product and per-category warning banners on the storefront PDP. Admin can cr
   - Tints background + border using the warning's color
   - Scoped CSS namespace (`.epw-*`) — won't collide with theme classes
 - **Resolver model** (`ETechFlow\ProductWarning\Model\WarningResolver::getForProduct($product)`) for stores that want to render warnings in a custom location (e.g., listing pages, cart, emails)
-- **Demo data installer** seeds 3 example warnings on first install (toggle-able by deleting the patch row)
 - **Theme-agnostic by design** — works on Hyvä, Luma, Mage-OS adminhtml, and any custom theme
 
 ---
@@ -62,7 +61,7 @@ open https://your-store.example.com/admin/etechflow_warning/warning/index
 # (or: Admin sidebar → Catalog → Inventory Warning)
 ```
 
-Three sample warnings are auto-seeded on first install. Edit one, assign it to a product or category, and reload the PDP — the banner renders above the price.
+A fresh install starts with an empty warnings grid. Click **Add New Warning**, set name + message + colour, assign it to a product or category, and reload the PDP — the banner renders above the price.
 
 ---
 

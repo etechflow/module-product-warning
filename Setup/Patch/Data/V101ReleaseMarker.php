@@ -43,6 +43,6 @@ class V101ReleaseMarker implements DataPatchInterface
 
     public static function getDependencies(): array
     {
-        return [SeedDefaultWarnings::class];
+        return [];
     }
 }

@@ -4,6 +4,76 @@ All notable changes to this module. Adheres to [Semantic Versioning](https://sem
 
 ---
 
+## [1.0.2] — 2026-06-05 — Fix blank admin grid + remove default-data seed
+
+### Fixed
+
+- **Admin grid + edit form rendered as blank pages.** Five XML files were
+  still named with the pre-rename `keystation_*` prefix while the
+  module's route id had been changed to `etechflow_warning`. Magento
+  builds admin layout handles from `{route_id}_{controller}_{action}`
+  and loads UI components by filename — both lookups silently failed
+  to match, so `/admin/etechflow_warning/warning/index` returned 200
+  with no errors but rendered no grid, no `Add New Warning` button,
+  and no form on the edit page.
+
+  Renamed (pure file renames — file *contents* were already correct):
+
+  ```
+  view/adminhtml/layout/
+    keystation_warning_warning_index.xml     → etechflow_warning_warning_index.xml
+    keystation_warning_warning_edit.xml      → etechflow_warning_warning_edit.xml
+    keystation_warning_warning_newaction.xml → etechflow_warning_warning_newaction.xml
+  view/adminhtml/ui_component/
+    keystation_warning_listing.xml → etechflow_warning_listing.xml
+    keystation_warning_form.xml    → etechflow_warning_form.xml
+  ```
+
+  **Bug class to watch for**: Magento does not error on a missing
+  layout handle — it just renders the page chrome without the
+  declared content. Trivial to ship to production undetected. Catch
+  it with: `bin/magento dev:layout:export-handles | grep <route_id>`
+  after every module rename.
+
+### Removed
+
+- **`Setup/Patch/Data/SeedDefaultWarnings.php`**. New installs now land
+  on an empty warnings grid. The old patch hard-coded 3
+  automotive-locksmith-flavoured demo rows (Unprogrammed Remote /
+  Repair Case / Un-cut Blade) that were noise for every other type of
+  merchant.
+
+  **Existing v1.0.0 / v1.0.1 installs**: rows already in
+  `etechflow_warning` are not touched on upgrade — the patch is
+  already recorded in `patch_list`, so setup:upgrade does nothing.
+  Delete the seeded rows from the admin grid if no longer wanted; they
+  will not come back on future upgrades.
+
+- **`V101ReleaseMarker::getDependencies()`** previously returned
+  `[SeedDefaultWarnings::class]`. Removed so a new install of v1.0.2
+  doesn't fatal on the missing class.
+
+### Added
+
+- **`Setup/Patch/Data/V102ReleaseMarker.php`** — always-a-patch
+  discipline marker. Depends on `V101ReleaseMarker` so patches run
+  in correct version order. No schema change.
+
+### Migration
+
+```bash
+composer update etechflow/module-product-warning
+bin/magento setup:upgrade
+bin/magento setup:di:compile
+bin/magento cache:flush
+```
+
+No schema migration, no data migration. **Strongly recommend upgrade
+for any v1.0.0 / v1.0.1 install** — the blank-grid bug makes the
+admin UI unusable.
+
+---
+
 ## [1.0.1] — 2026-06-03 — Critical: Fix class-load fatal in PDP Notice block
 
 ### Fixed

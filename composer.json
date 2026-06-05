@@ -2,7 +2,7 @@
     "name": "etechflow/module-product-warning",
     "description": "Per-product and per-category warning banners on the Magento 2 PDP. Admin can write coloured notices, assign them to specific products or whole categories, and the storefront auto-renders them. Theme-agnostic \u2014 works on Hyv\u00e4, Luma, and any custom theme without template overrides.",
     "type": "magento2-module",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "license": "proprietary",
     "keywords": [
         "magento",

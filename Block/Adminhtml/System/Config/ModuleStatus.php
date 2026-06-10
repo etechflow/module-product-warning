@@ -14,17 +14,14 @@ use Magento\Framework\View\Helper\Js;
 /**
  * Status banner at the top of the Product Warning admin config section.
  *
- * Five-state pattern (no "module enabled" branch — FAQ doesn't have a
- * single master kill-switch; storefront rendering is gated only by the
- * licence). Surfaces immediately to a first-time installer whether the
- * module is doing anything or sitting locked.
+ * Storefront rendering is gated only by the licence — a valid key is ALWAYS
+ * required (no environment toggle, no host bypass). Surfaces immediately to a
+ * first-time installer whether the module is active or sitting locked.
  *
  * States:
- *   1. Dev host bypass active           (info)
- *   2. Production Environment = No      (info)
- *   3. Licence key missing              (warning)
- *   4. Licence key invalid for host     (warning)
- *   5. Module is active                 (success)
+ *   1. Licence key missing              (warning)
+ *   2. Licence key invalid for host     (warning)
+ *   3. Module is active                 (success)
  */
 class ModuleStatus extends Fieldset
 {
@@ -65,30 +62,9 @@ class ModuleStatus extends Fieldset
     private function renderStatusBanner(): string
     {
         $host = $this->licenseValidator->getCurrentHost();
-        $isDevHost = $this->licenseValidator->isDevHost($host);
-        $isProduction = $this->licenseValidator->isProductionEnvironment();
         $licenceValid = $this->licenseValidator->isValid();
         $hasKey = trim($this->licenseValidator->getConfiguredKey()) !== ''
             || trim($this->licenseValidator->getConfiguredBundleKey()) !== '';
-
-        if ($isDevHost) {
-            return $this->banner(
-                'info',
-                '&#8505;&#65039; Dev host bypass active',
-                'The detected host <code>' . $this->escapeHtml($host) . '</code> matches a development pattern '
-                . '(<code>*.test</code>, <code>*.local</code>, <code>staging.*</code>, <code>*.ngrok-free.dev</code>, etc.). '
-                . 'The module runs at full features without a licence key here. Pay only when going live on a production domain.'
-            );
-        }
-
-        if (!$isProduction) {
-            return $this->banner(
-                'info',
-                '&#8505;&#65039; Production Environment = No',
-                'The Production Environment toggle is off, so the module runs at full features without checking the licence. '
-                . 'Use this on non-standard dev/staging domains the auto-detector misses. Switch to Yes before going live.'
-            );
-        }
 
         if (!$licenceValid) {
             if (!$hasKey) {
@@ -99,7 +75,7 @@ class ModuleStatus extends Fieldset
                     . 'The module is silently disabled — storefront FAQ pages return 404, admin pages redirect to the licence gate. '
                     . 'Paste your key in the <strong>License Key</strong> field below, or visit '
                     . '<a href="' . $this->getUrl('etechflow_warning/license/gate') . '" style="color:inherit;text-decoration:underline;">License &amp; Plans</a> '
-                    . 'to purchase one. If this is actually a dev/staging install, set <strong>Production Environment = No</strong>.'
+                    . 'to purchase one.'
                 );
             }
 

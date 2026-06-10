@@ -18,8 +18,9 @@ use Magento\Store\Model\StoreManagerInterface;
  * Hybrid model — follows LICENSING_PROTOCOL.md:
  *   - SP-XXXX keys  -> portal validation (domain + server IP must match).
  *   - HMAC keys     -> local HMAC-SHA256 per-module key OR shared bundle key.
- *   - "Production Environment = No" bypasses licensing for dev/staging.
- *   - Common dev hostnames auto-detect and bypass.
+ *   - A valid licence is ALWAYS required — there is no "Production Environment"
+ *     toggle and no host-based bypass. Dev/staging boxes are unlocked by setting a
+ *     per-module HMAC key (see computeKey()).
  *
  * Enforcement contract (feedback_etechflow_portal_enforcement_semantics):
  *   validateViaPortal() returns ?bool:
@@ -41,7 +42,6 @@ class LicenseValidator
     public const XML_PATH_ISSUED_AT              = 'etechflow_productwarning/license/issued_at';
     public const XML_PATH_IP_BLOCKED             = 'etechflow_productwarning/license/ip_blocked';
     public const XML_PATH_PORTAL_URL             = 'etechflow_productwarning/license/portal_url';
-    public const XML_PATH_PRODUCTION_ENVIRONMENT = 'etechflow_productwarning/license/production_environment';
 
     /** Shared bundle config path — same value across all eTechFlow modules. */
     public const XML_PATH_BUNDLE_LICENSE_KEY = 'etechflow_bundle/license/license_key';
@@ -88,12 +88,6 @@ class LicenseValidator
         if ($host === '') {
             return false;
         }
-        if (!$this->isProductionEnvironment()) {
-            return true;
-        }
-        if ($this->isDevelopmentHost($host)) {
-            return true;
-        }
         return $this->checkKey($host);
     }
 
@@ -132,15 +126,6 @@ class LicenseValidator
     {
         $value = $this->scopeConfig->getValue(self::XML_PATH_BUNDLE_LICENSE_KEY, ScopeInterface::SCOPE_STORE);
         return trim((string) $value);
-    }
-
-    public function isProductionEnvironment(): bool
-    {
-        $value = $this->scopeConfig->getValue(self::XML_PATH_PRODUCTION_ENVIRONMENT, ScopeInterface::SCOPE_STORE);
-        if ($value === null || $value === '') {
-            return true;
-        }
-        return (bool) $value;
     }
 
     public function getPortalUrl(): string

@@ -4,7 +4,6 @@
     <default>
         <etechflow_productwarning>
             <license>
-                <production_environment>1</production_environment>
                 <license_key></license_key>
                 <issued_key></issued_key>
                 <issued_at>0</issued_at>

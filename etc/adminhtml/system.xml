@@ -23,23 +23,13 @@
 
             <group id="license" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
                 <label>License</label>
-                <field id="production_environment" translate="label comment" type="select" sortOrder="5" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Production Environment</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment><![CDATA[
-                        <strong>Yes</strong> = this is your live site. The module checks the licence
-                        key against the current domain. If invalid, the module silently disables itself.<br/>
-                        <strong>No</strong> = this is dev/staging. The module runs at full features
-                        without a licence — use this on non-standard dev domains the auto-detector misses.<br/>
-                        Default: Yes.
-                    ]]></comment>
-                </field>
+                <comment><![CDATA[A valid licence is always required — there is no environment toggle and no host bypass. On a dev/staging box, enter a per-module HMAC key in the License Key field.]]></comment>
                 <field id="license_key" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>License Key</label>
                     <comment><![CDATA[
                         Paste the SP-XXXX key from your purchase email, or a per-module HMAC key, or a
                         shared eTechFlow bundle key. Bound to the domain you provided at checkout.<br/>
-                        Auto-bypassed for development hosts. <code>www.</code> prefix is normalised.
+                        A valid licence is required on every host. <code>www.</code> prefix is normalised.
                     ]]></comment>
                 </field>
                 <field id="bundle_license_key" translate="label comment" type="obscure" sortOrder="15" showInDefault="1" showInWebsite="0" showInStore="0">

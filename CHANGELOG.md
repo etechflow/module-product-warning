@@ -83,7 +83,7 @@ opt out with **Production Environment = No**.
 ### Notes
 
 - `License Portal URL` defaults to
-  `https://subpanel-paralyses-president.ngrok-free.dev/license/validate`
+  `https://license-service.etechflow.com/license/validate`
   (the eTechFlow portal). For production, change this when eTechFlow
   publishes the final portal URL.
 - Portal IP-revoke + suspend lock the module within ~60 seconds. Re-activating
